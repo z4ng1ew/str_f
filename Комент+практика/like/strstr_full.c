@@ -4,52 +4,52 @@
 
 
 
-
-
-char *s21_strstr(const char *haystack, const char *needle) { 
+char *s21_strstr(const char *haystack, const char *needle) {
 
   char *matching_word = s21_NULL;
 
-  if (haystack != matching_word) { 
+  if (haystack != matching_word) {
 
 
     int len_needle = strlen(needle);
 
-    if (len_needle == 0) {  
-    
-      matching_word = (char *)haystack; 
+    if (len_needle == 0) {
+
+      matching_word = (char *)haystack;
 
     } else {
-      while (*haystack != '\0' &&  matching_word == s21_NULL) { 
+      while (*haystack != '\0' &&  matching_word == s21_NULL) {
 
-        
-        if (*haystack == *needle) { 
+
+        if (*haystack == *needle) {
 
 
           const char *h = haystack;
-          const char *n = needle; 
+          const char *n = needle;
 
-          while (*h != '\0' && *n != '\0' && (*h == *n)) { 
+          while (*h != '\0' && *n != '\0' && (*h == *n)) {
 
 
-            h++; 
+            h++;
             n++;
           }
 
-          if (*n  == '\0') { 
+          if (*n  == '\0') {
 
 
-            matching_word = (char *)haystack; 
+            matching_word = (char *)haystack;
           }
 
         }
-        haystack++; 
+        haystack++;
       }
     }
   }
-  
-  return matching_word; 
-} 
+
+  return matching_word;
+}
+
+
 
 
 

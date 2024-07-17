@@ -1,28 +1,47 @@
 #include "../s21_string.h"
 
-static char *p_save_str;
+
 
 char *s21_strtok(char *str, const char *delim) {
-  char *result = s21_NULL;
-  char *tail;
+
+  static char * cur_position_tokenization; 
+  char *res_position = s21_NULL; 
+  char *delimiter_position;
+
 
   if (str != s21_NULL) {
-    p_save_str = str;
+    cur_position_tokenization = str; 
   }
 
-  else if (p_save_str != s21_NULL) {
-    for (; *p_save_str && s21_strchr(delim, *p_save_str); p_save_str++);
-  }
+    if (cur_position_tokenization != s21_NULL) {
+      while (*cur_position_tokenization != '\0' && s21_strchr(delim, *cur_position_tokenization)) { 
+      cur_position_tokenization++; 
+      } 
 
-  if (*p_save_str != '\0') {
-    result = p_save_str;
-    tail = result + s21_strcspn(result, delim);
 
-    if (*tail) {
-      *(tail++) = '\0';
+
+      if (*cur_position_tokenization != '\0') {
+      
+        res_position = cur_position_tokenization; 
+        delimiter_position = res_position + s21_strcspn(res_position, delim); 
+        
+        if (*delimiter_position != '\0') { 
+        *delimiter_position = '\0';      
+        delimiter_position++; 
+        } 
+
+        cur_position_tokenization = delimiter_position;
+
+      }
+
+
     }
+    
+    return res_position; 
 
-    p_save_str = tail;
   }
-  return result;
-}
+
+
+  
+
+
