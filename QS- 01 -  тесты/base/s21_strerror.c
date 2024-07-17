@@ -151,20 +151,20 @@ static const char *err_messages_arr[] = {
 
 
 
-char *s21_strerror(int error_code) { 
+char *s21_strerror(int errnum) { 
 
   static char error_message_result[300] = {'\0'}; 
 
-  if (error_code >= MAX_ERR_MESSAGES_INDEX || error_code <= MIN_ERR_MESSAGES_INDEX) { 
+  if (errnum >= MAX_ERR_MESSAGES_INDEX || errnum <= MIN_ERR_MESSAGES_INDEX) { 
 
 
-   s21_sprintf(error_message_result, "%s%d", ERR_CODE_OUTSIDE, error_code);
+   s21_sprintf(error_message_result, "%s%d", ERR_CODE_OUTSIDE, errnum);
 
   } else {
 
 
 
-   s21_strncpy(error_message_result, err_messages_arr[error_code], 299); 
+   s21_strncpy(error_message_result, err_messages_arr[errnum], 299); 
   } 
 
   return error_message_result; 

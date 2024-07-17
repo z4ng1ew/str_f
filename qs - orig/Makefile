@@ -1,4 +1,5 @@
 CC = gcc
+#CFLAGS = -Wall -Wextra -Werror -std=c11 -fsanitize=address -g -fprofile-arcs -ftest-coverage
 CFLAGS = -Wall -Wextra -Werror -std=c11
 CFLAGSGCOV = -fprofile-arcs -ftest-coverage
 CFLAGSSANITIZE = -fsanitize=address
@@ -6,8 +7,11 @@ CFLAGSSANITIZE = -fsanitize=address
 LIB = s21_string.a
 LIB_CFLAGS = -lcheck -lm
 
-ifeq ($(shell lsb_release -is 2>/dev/null), Ubuntu)
-    
+ifeq ($(shell uname -s), Darwin)
+    # macOS
+	LIB = s21_string
+else ifeq ($(shell lsb_release -is 2>/dev/null), Ubuntu)
+    # Ubuntu
     LIB_CFLAGS = -lcheck -lsubunit -lm
 endif
 
@@ -15,7 +19,7 @@ BASE_FUNC_PATH = base
 S21_SPRINTF_PATH = advanced
 
 LIB_SRC = $(wildcard $(BASE_FUNC_PATH)/*.c) \
-          $(wildcard $(S21_SPRINTF_PATH)/*.c)
+		  $(wildcard $(S21_SPRINTF_PATH)/*.c)
 
 LIB_OBJ = $(LIB_SRC:.c=.o)
 
@@ -35,12 +39,17 @@ rebuild: clean sanitize
 #  s21_string.a----------------------------------------------------------------------------------------
 
 s21_string.a: clean $(LIB_OBJ)
+ifeq ($(shell uname -s), Darwin)
+    # macOS
+	ar rcs lib$(LIB).a $(LIB_OBJ)
+else
 	ar rcs $(LIB) $(LIB_OBJ)
+endif
 	rm -f *.o
 
 #  ----------------------------------------------------------------------------------------------------
 
-clean:
+clean: 
 	find . -type f -name "*.o" -o -name "*.a" -o -name "*.gcda" -o -name "*.gcno" -o -name "*.bak" | xargs rm -f
 	rm -f $(TEST_PATH)/$(TEST_PATH) a.out
 	rm -rf gcov_report/
@@ -49,7 +58,12 @@ clean:
 #  TEST------------------------------------------------------------------------------------------------
 
 test: clean s21_string.a $(TEST_OBJ)
+ifeq ($(shell uname -s), Darwin)
+    # macOS
+	$(CC) $(CFLAGS) $(TEST_OBJ) -L. -l$(LIB) $(LIB_CFLAGS) -o $(TEST_PATH)/$(TEST_PATH)
+else
 	$(CC) $(CFLAGS) $(TEST_OBJ) -L. -l:$(LIB) $(LIB_CFLAGS) -o $(TEST_PATH)/$(TEST_PATH)
+endif
 	./unit_tests/unit_tests
 
 #  GCOV------------------------------------------------------------------------------------------------
@@ -63,9 +77,8 @@ gcov_report: clean insert_flags_gcov test
 
 gcov:
 	lcov --capture --directory . --output-file coverage.info
-	genhtml coverage.info --output-directory gcov_report
+	genhtml coverage.info --output-directory gcov_report	
 	open gcov_report/index.html
-
 #  ----------------------------------------------------------------------------------------------------
 
 clangn:
